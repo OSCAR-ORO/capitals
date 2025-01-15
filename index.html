@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Country Capital Search</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f4f4f9;
+      }
+      .container {
+        max-width: 400px;
+        margin: auto;
+        text-align: center;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #333;
+      }
+    #version {
+        font-size: 18px;
+        color: #717171;
+      }
+      input[type="text"] {
+        width: calc(100% - 20px);
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 16px;
+      }
+      button {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #0056b3;
+      }
+      .output {
+        margin-top: 20px;
+        font-size: 18px;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h2 id="version">v.1.0.🚧 Please, input country name in english.</h2>
+    <div class="container">
+      <h1>Find the Capital. By Oscar Oro.</h1>
+      <input type="text" id="countryInput" placeholder="Enter country name" />
+      <button onclick="findCapital()">Search</button>
+      <div class="output" id="output"></div>
+    </div>
+
+    <script>
+      // COUNTRIES DATABASE
+      const countries = [
+        { name: "Afghanistan", value: "Kabul" },
+        { name: "Albania", value: "Tirana" },
+        { name: "Algeria", value: "Algiers" },
+        { name: "Andorra", value: "Andorra la Vella" },
+        { name: "Angola", value: "Luanda" },
+        { name: "Antigua-and-barbuda", value: "Saint John's" },
+        { name: "Argentina", value: "Buenos Aires" },
+        { name: "Armenia", value: "Yerevan" },
+        { name: "Australia", value: "Canberra" },
+        { name: "Austria", value: "Vienna" },
+        { name: "Azerbaijan", value: "Baku" },
+        { name: "Bahamas", value: "Nassau" },
+        { name: "Bahrain", value: "Manama" },
+        { name: "Bangladesh", value: "Dhaka" },
+        { name: "Barbados", value: "Bridgetown" },
+        { name: "Belarus", value: "Minsk" },
+        { name: "Belgium", value: "Brussels" },
+        { name: "Belize", value: "Belmopan" },
+        { name: "Benin", value: "Porto-Novo" },
+        { name: "Bhutan", value: "Thimphu" },
+        { name: "Bolivia", value: "Sucre" },
+        { name: "Bosnia-and-herzegovina", value: "Sarajevo" },
+        { name: "Botswana", value: "Gaborone" },
+        { name: "Brazil", value: "Brasília" },
+        { name: "Brunei", value: "Bandar Seri Begawan" },
+        { name: "Bulgaria", value: "Sofia" },
+        { name: "Burkina-faso", value: "Ouagadougou" },
+        { name: "Burundi", value: "Gitega" },
+        { name: "Cabo-verde", value: "Praia" },
+        { name: "Cambodia", value: "Phnom Penh" },
+        { name: "Cameroon", value: "Yaoundé" },
+        { name: "Canada", value: "Ottawa" },
+        { name: "Central-african-republic", value: "Bangui" },
+        { name: "Chad", value: "N'Djamena" },
+        { name: "Chile", value: "Santiago" },
+        { name: "China", value: "Beijing" },
+        { name: "Colombia", value: "Bogotá" },
+        { name: "Comoros", value: "Moroni" },
+        { name: "Congo", value: "Brazzaville" },
+        { name: "Congo (Democratic Republic of the)", value: "Kinshasa" },
+        { name: "Costa-rica", value: "San José" },
+        { name: "Croatia", value: "Zagreb" },
+        { name: "Cuba", value: "Havana" },
+        { name: "Cyprus", value: "Nicosia" },
+        { name: "Czech-republic", value: "Prague" },
+        { name: "Denmark", value: "Copenhagen" },
+        { name: "Djibouti", value: "Djibouti" },
+        { name: "Dominica", value: "Roseau" },
+        { name: "Dominican-republic", value: "Santo Domingo" },
+        { name: "Ecuador", value: "Quito" },
+        { name: "Egypt", value: "Cairo" },
+        { name: "El-salvador", value: "San Salvador" },
+        { name: "Equatorial-guinea", value: "Malabo" },
+        { name: "Eritrea", value: "Asmara" },
+        { name: "Estonia", value: "Tallinn" },
+        { name: "Eswatini", value: "Mbabane" },
+        { name: "Ethiopia", value: "Addis Ababa" },
+        { name: "Fiji", value: "Suva" },
+        { name: "Finland", value: "Helsinki" },
+        { name: "France", value: "Paris" },
+        { name: "Gabon", value: "Libreville" },
+        { name: "Gambia", value: "Banjul" },
+        { name: "Georgia", value: "Tbilisi" },
+        { name: "Germany", value: "Berlin" },
+        { name: "Ghana", value: "Accra" },
+        { name: "Greece", value: "Athens" },
+        { name: "Grenada", value: "St. George's" },
+        { name: "Guatemala", value: "Guatemala City" },
+        { name: "Guinea", value: "Conakry" },
+        { name: "Guinea-bissau", value: "Bissau" },
+        { name: "Guyana", value: "Georgetown" },
+        { name: "Haiti", value: "Port-au-Prince" },
+        { name: "Honduras", value: "Tegucigalpa" },
+        { name: "Hungary", value: "Budapest" },
+        { name: "Iceland", value: "Reykjavik" },
+        { name: "India", value: "New Delhi" },
+        { name: "Indonesia", value: "Jakarta" },
+        { name: "Iran", value: "Tehran" },
+        { name: "Iraq", value: "Baghdad" },
+        { name: "Ireland", value: "Dublin" },
+        { name: "Israel", value: "Jerusalem" },
+        { name: "Italy", value: "Rome" },
+        { name: "Jamaica", value: "Kingston" },
+        { name: "Japan", value: "Tokyo" },
+        { name: "Jordan", value: "Amman" },
+        { name: "Kazakhstan", value: "Astana" },
+        { name: "Kenya", value: "Nairobi" },
+        { name: "Kiribati", value: "Tarawa" },
+        { name: "North-korea", value: "Pyongyang" },
+        { name: "South-korea", value: "Seoul" },
+        { name: "Kuwait", value: "Kuwait City" },
+        { name: "Kyrgyzstan", value: "Bishkek" },
+        { name: "Laos", value: "Vientiane" },
+        { name: "Latvia", value: "Riga" },
+        { name: "Lebanon", value: "Beirut" },
+        { name: "Lesotho", value: "Maseru" },
+        { name: "Liberia", value: "Monrovia" },
+        { name: "Libya", value: "Tripoli" },
+        { name: "Liechtenstein", value: "Vaduz" },
+        { name: "Lithuania", value: "Vilnius" },
+        { name: "Luxembourg", value: "Luxembourg City" },
+        { name: "Madagascar", value: "Antananarivo" },
+        { name: "Malawi", value: "Lilongwe" },
+        { name: "Malaysia", value: "Kuala Lumpur" },
+        { name: "Maldives", value: "Malé" },
+        { name: "Mali", value: "Bamako" },
+        { name: "Malta", value: "Valletta" },
+        { name: "Marshall-islands", value: "Majuro" },
+        { name: "Mauritania", value: "Nouakchott" },
+        { name: "Mauritius", value: "Port Louis" },
+        { name: "Mexico", value: "Mexico City" },
+        { name: "Micronesia", value: "Palikir" },
+        { name: "Moldova", value: "Chisinau" },
+        { name: "Monaco", value: "Monaco" },
+        { name: "Mongolia", value: "Ulaanbaatar" },
+        { name: "Montenegro", value: "Podgorica" },
+        { name: "Morocco", value: "Rabat" },
+        { name: "Mozambique", value: "Maputo" },
+        { name: "Myanmar", value: "Naypyidaw" },
+        { name: "Namibia", value: "Windhoek" },
+        { name: "Nauru", value: "Yaren" },
+        { name: "Nepal", value: "Kathmandu" },
+        { name: "Netherlands", value: "Amsterdam" },
+        { name: "New-zealand", value: "Wellington" },
+        { name: "Nicaragua", value: "Managua" },
+        { name: "Niger", value: "Niamey" },
+        { name: "Nigeria", value: "Abuja" },
+        { name: "North-macedonia", value: "Skopje" },
+        { name: "Norway", value: "Oslo" },
+        { name: "Oman", value: "Muscat" },
+        { name: "Pakistan", value: "Islamabad" },
+        { name: "Palau", value: "Ngerulmud" },
+        { name: "Panama", value: "Panama City" },
+        { name: "Papua-new-guinea", value: "Port Moresby" },
+        { name: "Paraguay", value: "Asunción" },
+        { name: "Peru", value: "Lima" },
+        { name: "Philippines", value: "Manila" },
+        { name: "Poland", value: "Warsaw" },
+        { name: "Portugal", value: "Lisbon" },
+        { name: "Qatar", value: "Doha" },
+        { name: "Romania", value: "Bucharest" },
+        { name: "Russia", value: "Moscow" },
+        { name: "Rwanda", value: "Kigali" },
+        { name: "Saint-kitts-and-nevis", value: "Basseterre" },
+        { name: "Saint Lucia", value: "Castries" },
+        { name: "Saint-incent-and-the-grenadines", value: "Kingstown" },
+        { name: "Samoa", value: "Apia" },
+        { name: "San-marino", value: "City of San Marino" },
+        { name: "Sao-tome-and-principe", value: "São Tomé" },
+        { name: "Saudi-arabia", value: "Riyadh" },
+        { name: "Senegal", value: "Dakar" },
+        { name: "Serbia", value: "Belgrade" },
+        { name: "Seychelles", value: "Victoria" },
+        { name: "Sierra-leone", value: "Freetown" },
+        { name: "Singapore", value: "Singapore" },
+        { name: "Slovakia", value: "Bratislava" },
+        { name: "Slovenia", value: "Ljubljana" },
+        { name: "Solomon-islands", value: "Honiara" },
+        { name: "Somalia", value: "Mogadishu" },
+        { name: "South-africa", value: "Pretoria" },
+        { name: "South-korea", value: "Seoul" },
+        { name: "South-sudan", value: "Juba" },
+        { name: "Spain", value: "Madrid" },
+        { name: "Sri-lanka", value: "Colombo" },
+        { name: "Sudan", value: "Khartoum" },
+        { name: "Suriname", value: "Paramaribo" },
+        { name: "Sweden", value: "Stockholm" },
+        { name: "Switzerland", value: "Bern" },
+        { name: "Syria", value: "Damascus" },
+        { name: "Taiwan", value: "Taipei" },
+        { name: "Tajikistan", value: "Dushanbe" },
+        { name: "Tanzania", value: "Dodoma" },
+        { name: "Thailand", value: "Bangkok" },
+        { name: "Timor-leste", value: "Dili" },
+        { name: "Togo", value: "Lomé" },
+        { name: "Tonga", value: "Nuku'alofa" },
+        { name: "Trinidad-and-tobago", value: "Port of Spain" },
+        { name: "Tunisia", value: "Tunis" },
+        { name: "Turkey", value: "Ankara" },
+        { name: "Turkmenistan", value: "Ashgabat" },
+        { name: "Tuvalu", value: "Funafuti" },
+        { name: "Uganda", value: "Kampala" },
+        { name: "Ukraine", value: "Kyiv" },
+        { name: "United-arab-emirates", value: "Abu Dhabi" },
+        { name: "United-kingdom", value: "London" },
+        { name: "United-states", value: "Washington, D.C." },
+        { name: "Uruguay", value: "Montevideo" },
+        { name: "Uzbekistan", value: "Tashkent" },
+        { name: "Vanuatu", value: "Port Vila" },
+        { name: "Vatican-city", value: "Vatican City" },
+        { name: "Venezuela", value: "Caracas" },
+        { name: "Vietnam", value: "Hanoi" },
+        { name: "Yemen", value: "Sana'a" },
+        { name: "Zambia", value: "Lusaka" },
+        { name: "Zimbabwe", value: "Harare" }
+      ];
+
+      // Add more countries (optional step)
+      countries.push({ name: "Italy", value: "Rome" });
+
+      // SPELL CHECKER
+      const spellCheck = (str) =>
+        str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+
+      // SEARCH FILTER
+      const search = (countryName) =>
+        countries
+          .filter((property) => property.name === spellCheck(countryName))
+          .map((property) => property.value);
+
+      // FIND CAPITAL FUNCTION
+      function findCapital() {
+        const userInput = document.getElementById("countryInput").value;
+        const result = search(userInput);
+
+        const outputDiv = document.getElementById("output");
+        if (result.length > 0) {
+          outputDiv.innerHTML = `The capital of ${spellCheck(userInput)} is <strong>${
+            result[0]
+          }</strong>.`;
+        } else {
+          outputDiv.textContent = `No found for"${userInput}". If its a composed word, separate it with dashes like South-africa`;
+        }
+      }
+    </script>
+  </body>
+</html>
